@@ -6,3 +6,7 @@ use App\Http\Controllers\Api\StudentController;
 
 Route::get('students', [StudentController::class, 'index']);
 
+Route::post('students', [StudentController::class, 'store']);
+
+Route::put('students/{id}', [StudentController::class, 'update']);
+
