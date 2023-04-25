@@ -24,7 +24,7 @@ class StudentController extends Controller
     {
         $students = $this->student
                         ->where('name', 'LIKE', "%{$request->name}%")
-                        ->get();
+                        ->paginate(3);
 
         return response()->json($students, 200);
     }
@@ -44,7 +44,10 @@ class StudentController extends Controller
      */
     public function show(string $id)
     {
-        //
+        if(!$student = $this->student->find($id))
+            return response()->json(['error' => 'Not Found'], 404);
+
+        return response()->json($student, 200);
     }
 
     /**
@@ -65,6 +68,12 @@ class StudentController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        if(!$student = $this->student->find($id))
+            return response()->json(['error' => 'Not Found'], 404);
+        
+        $student->delete();
+
+        return response()->json(['success' => true], 204);
+
     }
 }
