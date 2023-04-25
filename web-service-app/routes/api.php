@@ -2,11 +2,8 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\StudentController;
+use App\Http\Controllers\Api\v1\StudentController;
 
-Route::get('students', [StudentController::class, 'index']);
-
-Route::post('students', [StudentController::class, 'store']);
-
-Route::put('students/{id}', [StudentController::class, 'update']);
-
+Route::prefix('v1')->group(function () {
+    Route::apiResource('students', StudentController::class);
+});

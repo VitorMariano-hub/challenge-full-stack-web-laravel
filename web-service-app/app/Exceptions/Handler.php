@@ -27,4 +27,27 @@ class Handler extends ExceptionHandler
             //
         });
     }
-}
+
+    /**
+     * Response the exception handling.
+     */
+    public function render($request, Throwable $exception)
+    {
+        // Exception de uri 
+        if ($exception instanceof \Symfony\Component\HttpKernel\Exception\NotFoundHttpException){
+            // Verificando requisição ajax
+            if($request->expectsJson())
+                return response()->json(['error' => 'Not Found URI'], $exception->getStatusCode()); 
+        }
+        
+        // Exception de verbos http
+        if ($exception instanceof \Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException){
+            // Verificando requisição ajax
+            if($request->expectsJson())
+                return response()->json(['error' => 'Method Not Allowed'], $exception->getStatusCode()); 
+        }
+  
+        return parent::render($request, $exception);
+    }
+
+} 
