@@ -2,7 +2,8 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\StudentController;
+use App\Http\Controllers\Api\v1\StudentController;
 
-
-Route::apiResource('students', StudentController::class);
+Route::prefix('v1')->group(function () {
+    Route::apiResource('students', StudentController::class);
+});
