@@ -16,8 +16,7 @@ class CorsMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         $response = $next($request);
-
-        // Defina os cabeçalhos de resposta de CORS
+        
         $response->header('Access-Control-Allow-Origin', '*');
         $response->header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS, PUT, PATCH, DELETE');
         $response->header('Access-Control-Allow-Headers', 'Accept, Content-Type, X-Auth-Token, Origin, Authorization');

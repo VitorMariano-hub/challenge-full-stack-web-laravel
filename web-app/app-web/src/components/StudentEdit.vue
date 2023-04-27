@@ -6,8 +6,8 @@
       <form @submit.prevent="submit">
         <v-text-field v-model="student.name" label="Nome" required :error-messages="errors.name" type="text"></v-text-field> 
         <v-text-field v-model="student.email" label="E-mail" required :error-messages="errors.email" type="email"></v-text-field> 
-        <v-text-field v-model="student.ra" label="Registro Acadêmico" required :error-messages="errors.ra" type="number" mask="######"></v-text-field> 
-        <v-text-field v-model="student.cpf" label="CPF" required :error-messages="errors.cpf" type="number" mask="###.###.###-##"></v-text-field> 
+        <v-text-field v-model="student.ra" label="Registro Acadêmico" required :error-messages="errors.ra" type="number" mask="######" disabled readonly></v-text-field> 
+        <v-text-field v-model="student.cpf" label="CPF" required :error-messages="errors.cpf" type="number" mask="###.###.###-##" disabled readonly></v-text-field> 
         <v-btn color="red"  class="me-4" @click="handleCancelClick">Cancelar</v-btn> 
         <v-btn color="green"  @click="handleUpdateClick">Atualizar</v-btn> 
       </form>
