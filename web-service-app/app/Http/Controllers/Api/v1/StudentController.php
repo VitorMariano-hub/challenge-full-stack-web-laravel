@@ -70,12 +70,11 @@ class StudentController extends Controller
 
         $request->validate([
             'name' => 'required|max:100',
-            'email' => 'required|max:100',
-            'ra' => 'required|max:10|unique:students,ra,' . $id,
-            'cpf' => 'required|max:11|unique:students,cpf,' . $id
+            'email' => 'required|max:100'
         ]);
         
-        $student->update($request->all());
+        // Garantindo que ra e cpf não sejam alterados
+        $student->update($request->except(['ra', 'cpf']));
         
         return response()->json($student, 200);
     }
