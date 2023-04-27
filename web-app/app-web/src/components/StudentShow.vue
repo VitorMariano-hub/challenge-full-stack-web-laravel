@@ -19,7 +19,7 @@
         </v-btn>
       </v-col>
     </v-row>
-  <v-table>
+    <v-table>
     <thead>
       <tr>
         <th class="text-left">Registro Acadêmico</th>
@@ -28,6 +28,9 @@
         <th class="text-left">Ações</th>
       </tr>
     </thead>
+    <v-snackbar v-model="showSnackbar" :timeout="timeout" :color="color">
+      {{ message }}
+    </v-snackbar>
     <tbody>
       <tr v-for="item in students" :key="item.id">
         <td>{{ item.ra }}</td>
@@ -44,15 +47,12 @@
       </tr>
     </tbody>
   </v-table>
-
-      <v-pagination
-        v-model="pagination.page"
-        :total-rows="count"
-        :per-page="pageSize"
-        prev-text="Prev"
-        next-text="Next"
-        @change="handlePageChange"
-      ></v-pagination>
+  <v-pagination
+      :total-visible="totalVisible"
+      :length="totalPages"
+      :model-value="currentPage"
+      @update:model-value="changePage"
+  ></v-pagination>
   </div>
 </template>
 
@@ -69,94 +69,75 @@ export default {
     return {
       searchTerm: '',
       students: [],
-      pagination: {
-        currentIndex: -1,
-        page: 1,
-        count: 0
-      }
+      currentPage: 1,
+      totalStudents: 0,
+      perPage: 5,
+      totalPages: 1,
+      totalVisible: 5,
+      showSnackbar: false,
+      message: '',
+      timeout: 3000, 
+      color: 'success',
     };
+  },
+  created(){
+    // Mensagem de alerta ao cadastrar/editar/excluir.
+    this.message = this.$route.query.successMessage;
+    if (this.message) {
+      this.showSnackbar = true;
+      setTimeout(() => {
+        this.showSnackbar = false;
+        this.$router.replace({ query: {} });
+      }, this.timeout);
+    }
   },
   mounted() {
     this.fetchStudents();
   },
   methods: {
-    fetchStudents() {
-      axios
-        .get('https://web-service-app.herokuapp.com/api/v1/students', {
-          params: { page: this.pagination.page }})
-        .then(response => {
-          this.students = response.data.data; 
-          this.pagination = response.data;
-        })
-        .catch(error => {
+    // Requisição a api
+   async fetchStudents() {
+        try {
+          const response = await axios.get('https://web-service-app.herokuapp.com/api/v1/students', {
+            params: {
+              page: this.currentPage,
+              name: this.searchTerm
+            }
+        });
+          this.students = response.data.data;
+          this.totalStudents = response.data.total;
+          this.totalPages = Math.ceil(this.totalStudents / this.perPage);
+        } catch (error) {
           console.error(error);
-        });
-    },
-    editStudent(id) {
-      this.$router.push({ name: 'edit', params: { id: id }});
-    },
-    deleteStudent(id) {
-      this.$router.push({ name: 'delete', params: { id: id }});
-    },
-    handleSearchClick() {
-      axios.get('https://web-service-app.herokuapp.com/api/v1/students', {
-        params: {
-          name: this.searchTerm
         }
-      }).then(response => {
-        this.students = response.data.data;
-        this.pagination.total = response.data.total;
-        this.pagination.per_page = response.data.per_page;
-        this.pagination.current_page = response.data.current_page;
-        this.pagination.last_page = response.data.last_page;
-      }).catch(error => {
-        console.log(error);
-      });
-    },
-    handleCreateClick() {
-      this.$router.push('/register'); 
-    },
-    getRequestParams(page, pageSize) {
-      let params = {};
+        },
 
-      if (page) {
-        params["page"] = page - 1;
-      }
+        //Paginação
+        changePage(page) {
+          this.currentPage = page;
+          this.fetchStudents();
+        },
 
-      if (pageSize) {
-        params["size"] = pageSize;
-      }
+        // Editando o aluno
+        editStudent(id) {
+          this.$router.push({ name: 'edit', params: { id: id }});
+        },
 
-      return params;
-    },
+        //Deletando o aluno
+        deleteStudent(id) {
+          this.$router.push({ name: 'delete', params: { id: id }});
+        },
 
-    retrieveTutorials() {
-      const params = this.getRequestParams(
-        this.page
-      );
+        // Pesquisando alunos
+        handleSearchClick() {
+          this.currentPage = 1;
+          this.fetchStudents();
+        },
 
-      fetchStudents(params)
-        .then((response) => {
-          const totalItems = response.data;
-          this.count = totalItems.total;
-
-          console.log(response.data);
-        })
-        .catch((e) => {
-          console.log(e);
-        });
-    },
-
-    handlePageChange(value) {
-      this.page = value;
-      this.retrieveTutorials();
-    },
-
-    handlePageSizeChange(event) {
-      this.pageSize = event.target.value;
-      this.page = 1;
-      this.retrieveTutorials();
-    },
+        // Link para cadastrar alunos
+        handleCreateClick() {
+          this.$router.push('/register'); 
+        },
   }
 };
 </script>

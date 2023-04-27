@@ -46,8 +46,7 @@ export default {
       };
       axios.post('https://web-service-app.herokuapp.com/api/v1/students', studentData)
         .then(response => {
-          console.log('Estudante cadastrado com sucesso:', response.data);
-          this.$router.push({ path: '/', params: { successMessage: 'Estudante cadastrado com sucesso!' } });
+          this.$router.push({ path: '/', query: { successMessage: 'Aluno cadastrado com sucesso!' } });
         })
         .catch(error => {
           this.errors = error.response.data.errors;

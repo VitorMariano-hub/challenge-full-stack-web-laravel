@@ -26,7 +26,7 @@ class StudentController extends Controller
                         ->where('name', 'LIKE', "%{$request->name}%")
                         ->orWhere('cpf', 'LIKE', "%{$request->name}%")
                         ->orWhere('ra', 'LIKE', "%{$request->name}%")
-                        ->paginate(15);
+                        ->paginate(5);
 
         return response()->json($students, 200);
     }

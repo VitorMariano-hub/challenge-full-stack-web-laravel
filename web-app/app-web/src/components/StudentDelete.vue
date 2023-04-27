@@ -2,9 +2,9 @@
   <div>
     <v-dialog v-model="showDeleteDialog" max-width="500px"> <!-- Card confirmação exclusão -->
       <v-card>
-        <v-card-title class="headline">Tem certeza que deseja remover esse estudante?</v-card-title>
+        <v-card-title class="headline text-center">Tem certeza que deseja remover o aluno?</v-card-title>
         <v-card-text>
-          <p>Esta ação é irreversível e o registro do estudante será excluído permanentemente.</p>
+          <p class="headline text-center">Registro do aluno será excluído permanentemente.</p>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -46,10 +46,7 @@ export default {
     MainMenu,
   },
   props: {
-    id: {
-      type: Number,
-      required: true
-    }
+    id: ''
   },
 data() {
   return {
@@ -72,7 +69,7 @@ data() {
     deleteStudent() {
       axios.delete(`https://web-service-app.herokuapp.com/api/v1/students/${this.id}`)
         .then(response => {
-          this.$router.push({ path: '/', params: { successMessage: 'Estudante removido com sucesso!' } });
+          this.$router.push({ name: 'Home', query: { successMessage: 'Aluno removido com sucesso!' } });
         })
         .catch(error => {
           this.errors = error.response.data.errors;
@@ -81,7 +78,7 @@ data() {
     },
 
     handleCancelClick() {
-      this.$router.push('/');
+      this.$router.push({ name: 'Home'});
     },
     handleDeleteClick(id) {
       this.idToDelete = id;
