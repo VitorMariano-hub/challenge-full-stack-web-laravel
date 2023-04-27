@@ -1,5 +1,18 @@
 <template>
   <div>
+    <v-dialog v-model="showDeleteDialog" max-width="500px"> <!-- Card confirmação exclusão -->
+      <v-card>
+        <v-card-title class="headline">Tem certeza que deseja remover esse estudante?</v-card-title>
+        <v-card-text>
+          <p>Esta ação é irreversível e o registro do estudante será excluído permanentemente.</p>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" text @click="showDeleteDialog = false">Cancelar</v-btn>
+          <v-btn color="red" text @click="deleteStudent()">Deletar</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <main-menu /> <!-- Componente de menu principal -->
     <v-container>
       <v-card>
@@ -38,12 +51,13 @@ export default {
       required: true
     }
   },
-  data() {
-    return {
-      student: {},
-      errors: '',
-    };
-  },
+data() {
+  return {
+    student: {},
+    errors: '',
+    showDeleteDialog: false
+  };
+},
   mounted() {
     axios
       .get(`https://web-service-app.herokuapp.com/api/v1/students/${this.id}`)
@@ -55,11 +69,7 @@ export default {
       });
   },
   methods: {
-    handleCancelClick() {
-      this.$router.push('/');
-    },
-    handleDeleteClick() {
-      // Função para enviar os dados do formulário para o endpoint de cadastro   
+    deleteStudent() {
       axios.delete(`https://web-service-app.herokuapp.com/api/v1/students/${this.id}`)
         .then(response => {
           this.$router.push({ path: '/', params: { successMessage: 'Estudante removido com sucesso!' } });
@@ -67,6 +77,15 @@ export default {
         .catch(error => {
           this.errors = error.response.data.errors;
         });
+      this.showDeleteDialog = false;
+    },
+
+    handleCancelClick() {
+      this.$router.push('/');
+    },
+    handleDeleteClick(id) {
+      this.idToDelete = id;
+      this.showDeleteDialog = true;
     },
   }
 }

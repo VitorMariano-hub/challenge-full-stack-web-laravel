@@ -19,7 +19,6 @@
         </v-btn>
       </v-col>
     </v-row>
-  <div v-if="successMessage" class="alert alert-success">{{ successMessage }}</div>
   <v-table>
     <thead>
       <tr>
@@ -45,31 +44,36 @@
       </tr>
     </tbody>
   </v-table>
-    <Pagination :pagination="pagination"  @input="handlePageChange" />
+
+      <v-pagination
+        v-model="pagination.page"
+        :total-rows="count"
+        :per-page="pageSize"
+        prev-text="Prev"
+        next-text="Next"
+        @change="handlePageChange"
+      ></v-pagination>
   </div>
 </template>
 
 <script>
 import axios from 'axios';
 import MainMenu from '@/components/MainMenu.vue'; 
-import Pagination from '@/components/Pagination.vue'; 
 
 export default {
   name: 'StudentShow',
   components: {
-    Pagination,
     MainMenu
   },
   data() {
     return {
       searchTerm: '',
       students: [],
-       pagination: {
-          total: '',
-          per_page: '',
-          current_page: '',
-          last_page: ''
-      },
+      pagination: {
+        currentIndex: -1,
+        page: 1,
+        count: 0
+      }
     };
   },
   mounted() {
@@ -78,13 +82,11 @@ export default {
   methods: {
     fetchStudents() {
       axios
-        .get('https://web-service-app.herokuapp.com/api/v1/students', { params: this.pagination.current_page })
+        .get('https://web-service-app.herokuapp.com/api/v1/students', {
+          params: { page: this.pagination.page }})
         .then(response => {
           this.students = response.data.data; 
-          this.pagination.total = response.data.total; 
-          this.pagination.per_page = response.data.per_page; 
-          this.pagination.current_page = response.data.current_page; 
-          this.pagination.last_page = response.data.last_page; 
+          this.pagination = response.data;
         })
         .catch(error => {
           console.error(error);
@@ -95,9 +97,6 @@ export default {
     },
     deleteStudent(id) {
       this.$router.push({ name: 'delete', params: { id: id }});
-    },
-    handlePageChange(value) {
-      this.pagination.current_page = value;
     },
     handleSearchClick() {
       axios.get('https://web-service-app.herokuapp.com/api/v1/students', {
@@ -116,6 +115,47 @@ export default {
     },
     handleCreateClick() {
       this.$router.push('/register'); 
+    },
+    getRequestParams(page, pageSize) {
+      let params = {};
+
+      if (page) {
+        params["page"] = page - 1;
+      }
+
+      if (pageSize) {
+        params["size"] = pageSize;
+      }
+
+      return params;
+    },
+
+    retrieveTutorials() {
+      const params = this.getRequestParams(
+        this.page
+      );
+
+      fetchStudents(params)
+        .then((response) => {
+          const totalItems = response.data;
+          this.count = totalItems.total;
+
+          console.log(response.data);
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+    },
+
+    handlePageChange(value) {
+      this.page = value;
+      this.retrieveTutorials();
+    },
+
+    handlePageSizeChange(event) {
+      this.pageSize = event.target.value;
+      this.page = 1;
+      this.retrieveTutorials();
     },
   }
 };
