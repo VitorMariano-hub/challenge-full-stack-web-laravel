@@ -26,7 +26,6 @@ export default {
   },
   props: {
     id: {
-      type: Number,
       required: true
     }
   },
@@ -53,7 +52,7 @@ export default {
     handleUpdateClick() {
       axios.put(`https://web-service-app.herokuapp.com/api/v1/students/${this.id}`, this.student)
         .then(response => {
-          this.$router.push({ path: '/', params: { successMessage: 'Estudante atualizado com sucesso!' } });
+          this.$router.push({ path: '/', query: { successMessage: 'Aluno atualizado com sucesso!' } });
         })
         .catch(error => {
           this.errors = error.response.data.errors;
