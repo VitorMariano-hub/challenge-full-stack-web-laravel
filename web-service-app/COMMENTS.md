@@ -3,7 +3,7 @@
 
 Aplicação que realiza a Matrícula do Aluno na Turma de Programação Web da instituição.
 
-- No projeto, foi utilizado o framework Laravel para a criação da API responsável pelo cadastro de alunos. Para garantir um tratamento mais adequado das exceções, foram implementadas exceptions na classe handler, permitindo um melhor controle e gerenciamento de erros. Para melhorar a experiência do usuário, foi realizada a tradução para o português brasileiro.
+- No projeto, foi utilizado o framework Laravel para a criação da API responsável pelo cadastro de alunos em conjunto com banco de dados MYSQL. Para garantir um tratamento mais adequado das exceções, foram implementadas exceptions na classe handler, permitindo um melhor controle e gerenciamento de erros. Para melhorar a experiência do usuário, foi realizada a tradução para o português brasileiro.
 
 
 -  Se tivesse mais tempo para implementar o projeto, algumas melhorias poderiam ser realizadas para aprimorar a sua estrutura. Dentre elas, uma importante seria a criação de um repository para desacoplar a responsabilidade do controller sobre as consultas realizadas no banco de dados, tornando a arquitetura mais organizada e fácil de dar manutenção.
