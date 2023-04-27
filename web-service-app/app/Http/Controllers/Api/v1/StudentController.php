@@ -24,7 +24,9 @@ class StudentController extends Controller
     {
         $students = $this->student
                         ->where('name', 'LIKE', "%{$request->name}%")
-                        ->paginate(3);
+                        ->orWhere('cpf', 'LIKE', "%{$request->name}%")
+                        ->orWhere('ra', 'LIKE', "%{$request->name}%")
+                        ->paginate(15);
 
         return response()->json($students, 200);
     }
@@ -32,10 +34,19 @@ class StudentController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreUpdateStudentRequest $request)
+    public function store(Request $request)
     {
+
+        $request->validate([
+            'name' => 'required|max:100',
+            'email' => 'required|max:100',
+            'ra' => 'required|max:10|unique:students,ra',
+            'cpf' => 'required|max:11|unique:students,cpf'
+        ]);
+
        $student = $this->student->create($request->all());
 
+    
        return response()->json($student, 201);
     }
 
@@ -53,13 +64,20 @@ class StudentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(StoreUpdateStudentRequest $request, string $id)
+    public function update(Request $request, string $id)
     {
         if(!$student = $this->student->find($id))
             return response()->json(['error' => 'Not Found'], 404);
 
+        $request->validate([
+            'name' => 'required|max:100',
+            'email' => 'required|max:100',
+            'ra' => 'required|max:10|unique:students,ra,' . $id,
+            'cpf' => 'required|max:11|unique:students,cpf,' . $id
+        ]);
+        
         $student->update($request->all());
-
+        
         return response()->json($student, 200);
     }
 
